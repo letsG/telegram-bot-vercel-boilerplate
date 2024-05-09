@@ -120,6 +120,7 @@ stepHandler.action('next', async (ctx) => {
     `Вот диплинк на подключение Tonkeeper`,
     Markup.inlineKeyboard([Markup.button.url('Подключить кошелек', link)]),
   );
+  return ctx.wizard.next();
 });
 
 const superWizard = new WizardScene(
