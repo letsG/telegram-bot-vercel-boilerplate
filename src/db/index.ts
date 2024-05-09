@@ -42,18 +42,15 @@ export const createUser = async (
   first_name?: string,
   last_name?: string,
 ) => {
-  // @ts-ignore
   return await db
     .insertInto('user')
     .values({
       id,
       first_name: first_name || id.toString(),
       last_name,
-      // @ts-ignore
-      metadata: {
-        // @ts-ignore
+      metadata: JSON.stringify({
         wallet: null,
-      },
+      }),
     })
     .returning(['id', 'first_name', 'last_name', 'created_at', 'metadata'])
     .executeTakeFirst();
