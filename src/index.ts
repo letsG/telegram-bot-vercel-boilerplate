@@ -62,7 +62,10 @@ const stepHandler = new Composer<SessionContext>();
 stepHandler.action('next', async (ctx) => {
   debug('next action');
 
-  if (ctx.session.user?.id && ctx.session.wallet) {
+  if (
+    ctx.session.user?.id &&
+    JSON.parse(ctx.session.user?.metadata || '{}')?.wallet
+  ) {
     await ctx.reply('Спасибо за участие в розыгрыше!');
     return ctx.scene.leave();
   }
@@ -83,6 +86,7 @@ stepHandler.action('next', async (ctx) => {
     const walletName =
       (await getWalletInfo(wallet.device.appName))?.tondns ||
       wallet.account.publicKey;
+
     ctx.session.wallet = wallet;
 
     if (ctx.session.user?.id) {
@@ -125,10 +129,14 @@ const superWizard = new WizardScene(
   'super-wizard',
   async (ctx) => {
     await login()(ctx);
-    if (JSON.parse(ctx.session.user?.metadata || '{}').wallet) {
-      await ctx.reply('Кошелек уже подключен');
+    if (
+      ctx.session.user?.id &&
+      JSON.parse(ctx.session.user?.metadata || '{}')?.wallet
+    ) {
+      await ctx.reply('Спасибо за участие в розыгрыше!');
       return ctx.scene.leave();
     }
+
     await ctx.reply(
       `Здарова [${ctx.session.user?.first_name}]!\n\n Добро пожаловать в розыгрыш NFT от @${name}! 🎉\n\n${description}*\n\nНапиши ${author} если что-то не понятно`,
       Markup.inlineKeyboard([
