@@ -94,6 +94,7 @@ stepHandler.action('next', async (ctx) => {
       `Кошелек ${walletName} успешно подключен!`,
       Markup.inlineKeyboard([Markup.button.callback('Успех', 'next')]),
     );
+    return ctx.scene.leave();
   };
 
   if (ctx.session.wallet) {
