@@ -81,15 +81,20 @@ stepHandler.action('next', async (ctx) => {
       wallet.account.publicKey;
 
     ctx.session.wallet = wallet;
-
-    await updateUserMetaData(ctx.session.user?.id, {
-      wallet: wallet.account.address,
-    });
-    await ctx.reply(
-      `Кошелек ${walletName} успешно подключен!`,
-      Markup.inlineKeyboard([Markup.button.callback('Успех', 'next')]),
-    );
-    return ctx.scene.leave();
+    try {
+      await updateUserMetaData(ctx.session.user?.id, {
+        wallet: wallet.account.address,
+      });
+      await ctx.reply(
+        `Кошелек ${walletName} успешно подключен!`,
+        Markup.inlineKeyboard([Markup.button.callback('Успех', 'next')]),
+      );
+      return ctx.scene.leave();
+    } catch (error) {
+      console.error(error);
+      await ctx.reply('Произошла ошибка при сохранении кошелька');
+      return ctx.scene.leave();
+    }
   };
 
   connector.onStatusChange(async (wallet) => {
