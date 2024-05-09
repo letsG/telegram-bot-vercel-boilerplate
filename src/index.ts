@@ -97,10 +97,6 @@ stepHandler.action('next', async (ctx) => {
     return ctx.scene.leave();
   };
 
-  if (ctx.session.wallet) {
-    return walletHandler(ctx.session.wallet, ctx);
-  }
-
   connector.onStatusChange(async (wallet) => {
     if (wallet) {
       debug('Wallet connected', wallet);
@@ -116,6 +112,10 @@ stepHandler.action('next', async (ctx) => {
     bridgeUrl: tonkeeper.bridgeUrl,
     universalLink: tonkeeper.universalLink,
   });
+
+  if (ctx.session.wallet) {
+    return walletHandler(ctx.session.wallet, ctx);
+  }
 
   await ctx.reply(
     `Вот диплинк на подключение Tonkeeper`,
