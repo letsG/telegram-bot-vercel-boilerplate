@@ -85,11 +85,9 @@ stepHandler.action('next', async (ctx) => {
 
     ctx.session.wallet = wallet;
 
-    if (ctx.session.user?.id) {
-      await updateUserMetaData(ctx.session.user.id, {
-        wallet: wallet.account.address,
-      });
-    }
+    await updateUserMetaData(ctx.session.user.id, {
+      wallet: wallet.account.address,
+    });
     await ctx.reply(
       `Кошелек ${walletName} успешно подключен!`,
       Markup.inlineKeyboard([Markup.button.callback('Успех', 'next')]),
