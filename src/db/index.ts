@@ -67,9 +67,9 @@ export const updateUserMetaData = async (
 
   console.log('updateUserMetaData', user, payload);
   if (!user) {
-    return null;
+    throw new Error('User not found');
   }
-  return await db
+  await db
     .updateTable('user')
     .set(
       'metadata',
