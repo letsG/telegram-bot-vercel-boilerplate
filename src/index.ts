@@ -19,10 +19,10 @@ import {
 } from 'telegraf/scenes';
 import { name, description, author } from '../package.json';
 import { getWalletInfo, getWallets } from './ton-connect/wallets';
-import TonConnect, { Wallet } from '@tonconnect/sdk';
-import { TonConnectStorage } from './ton-connect/storage';
+import { Wallet } from '@tonconnect/sdk';
 import createDebug from 'debug';
 import { updateUserMetaData } from './db';
+import { getConnector } from './ton-connect/connector';
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const ENVIRONMENT = process.env.NODE_ENV || '';
@@ -70,10 +70,7 @@ stepHandler.action('next', async (ctx) => {
 
   if (!chatId || !ctx.session.user?.id) return ctx.reply('Chat id not found!');
 
-  const connector = new TonConnect({
-    storage: new TonConnectStorage(chatId),
-    manifestUrl: process.env.MANIFEST_URL,
-  });
+  const connector = getConnector(chatId);
 
   const walletHandler = async (wallet: Wallet) => {
     const walletName =
