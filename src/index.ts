@@ -61,19 +61,15 @@ const stepHandler = new Composer<SessionContext>();
 
 stepHandler.action('next', async (ctx) => {
   debug('next action');
+  const chatId = ctx.chat?.id || ctx.session.user?.id;
 
   if (
-    ctx.session.user?.id &&
+    ctx.session.wallet ||
     JSON.parse(ctx.session.user?.metadata || '{}')?.wallet
   ) {
-    await ctx.reply('Спасибо за участие в розыгрыше!');
+    ctx.reply('Кошелек уже подключен!');
     return ctx.scene.leave();
   }
-
-  if (!ctx.session.user?.id) {
-    return ctx.reply('User not found');
-  }
-  const chatId = ctx.chat?.id;
 
   if (!chatId || !ctx.session.user?.id) return ctx.reply('Chat id not found!');
 
