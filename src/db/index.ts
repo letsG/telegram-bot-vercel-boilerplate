@@ -57,15 +57,20 @@ export const createUser = async (
 };
 
 export const updateUserMetaData = async (
-  id: number,
-  payload: { [key: string]: any },
+  id?: number,
+  payload?: { [key: string]: any },
 ) => {
+  if (!id) {
+    throw new Error('User id not found');
+  }
   const user = await getUser(id);
 
-  console.log('updateUserMetaData', user, payload);
-  if (!user || !id) {
+  if (!user) {
     throw new Error('User not found');
   }
+
+  console.log('updateUserMetaData', user, payload);
+
   await db
     .updateTable('user')
     .set(
