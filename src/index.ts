@@ -63,10 +63,7 @@ stepHandler.action('next', async (ctx) => {
   debug('next action');
   const chatId = ctx.chat?.id || ctx.session.user?.id;
 
-  if (
-    ctx.session.wallet ||
-    JSON.parse(ctx.session.user?.metadata || '{}')?.wallet
-  ) {
+  if (JSON.parse(ctx.session.user?.metadata || '{}')?.wallet) {
     ctx.reply('Кошелек уже подключен!');
     return ctx.scene.leave();
   }
