@@ -102,6 +102,7 @@ stepHandler.action('next', async (ctx) => {
 
   connector.onStatusChange(async (wallet) => {
     if (wallet) {
+      debug('Wallet connected', wallet);
       return walletHandler(wallet, ctx);
     }
   });
