@@ -6,9 +6,12 @@
   "author": "@hypeSTR",
   "homepage": "https://t.me/vashche_top_bot",
   "dependencies": {
+    "@tonconnect/sdk": "^3.0.2",
     "@vercel/node": "^3.0.28",
+    "@vercel/postgres": "^0.8.0",
     "dotenv-cli": "^7.4.1",
-    "telegraf": "^4.16.3"
+    "telegraf": "^4.16.3",
+    "vercel": "^34.1.9"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
