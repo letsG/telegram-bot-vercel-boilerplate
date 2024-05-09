@@ -19,7 +19,7 @@ import {
 } from 'telegraf/scenes';
 import { name, description, author } from '../package.json';
 import { getWalletInfo, getWallets } from './ton-connect/wallets';
-import { Wallet } from '@tonconnect/sdk';
+import { CHAIN, toUserFriendlyAddress, Wallet } from '@tonconnect/sdk';
 import createDebug from 'debug';
 import { updateUserMetaData } from './db';
 import { getConnector } from './ton-connect/connector';
@@ -69,9 +69,40 @@ stepHandler.action('next', async (ctx) => {
   }
 
   if (!chatId || !ctx.session.user?.id) return ctx.reply('Chat id not found!');
+  let newConnectRequestListenersMap = new Map<number, () => void>();
 
-  const connector = getConnector(chatId);
+  newConnectRequestListenersMap.get(chatId)?.();
 
+  const connector = getConnector(chatId, () => {
+    unsubscribe();
+    newConnectRequestListenersMap.delete(chatId);
+  });
+
+  await connector.restoreConnection();
+  if (connector.connected) {
+    const connectedName =
+      (await getWalletInfo(connector.wallet!.device.appName))?.name ||
+      connector.wallet!.device.appName;
+    await ctx.sendMessage(
+      `You have already connect ${connectedName} wallet\nYour address: ${toUserFriendlyAddress(
+        connector.wallet!.account.address,
+        connector.wallet!.account.chain === CHAIN.TESTNET,
+      )}\n\n Disconnect wallet firstly to connect a new one`,
+    );
+
+    return;
+  }
+
+  const unsubscribe = connector.onStatusChange(async (wallet) => {
+    if (wallet) {
+      const walletName =
+        (await getWalletInfo(wallet.device.appName))?.name ||
+        wallet.device.appName;
+      await ctx.sendMessage(`${walletName} wallet connected successfully`);
+      unsubscribe();
+      newConnectRequestListenersMap.delete(chatId);
+    }
+  });
   const walletHandler = async (wallet: Wallet) => {
     const walletName =
       (await getWalletInfo(wallet.device.appName))?.tondns ||
