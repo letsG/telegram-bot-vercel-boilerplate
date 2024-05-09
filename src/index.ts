@@ -93,6 +93,8 @@ stepHandler.action('next', async (ctx) => {
     } catch (error) {
       console.error(error);
       await ctx.reply('Произошла ошибка при сохранении кошелька');
+      ctx.session.wallet = null;
+      ctx.session.user = null;
       return ctx.scene.leave();
     }
   };
