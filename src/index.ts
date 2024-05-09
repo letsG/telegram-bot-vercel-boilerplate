@@ -116,7 +116,7 @@ stepHandler.action('next', async (ctx) => {
     universalLink: tonkeeper.universalLink,
   });
 
-  await await ctx.reply(
+  await ctx.reply(
     `Вот диплинк на подключение Tonkeeper`,
     Markup.inlineKeyboard([Markup.button.url('Подключить кошелек', link)]),
   );
