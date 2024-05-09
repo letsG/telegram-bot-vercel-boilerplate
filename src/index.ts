@@ -85,7 +85,7 @@ stepHandler.action('next', async (ctx) => {
 
     ctx.session.wallet = wallet;
 
-    await updateUserMetaData(ctx.session.user.id, {
+    await updateUserMetaData(ctx.session.user?.id, {
       wallet: wallet.account.address,
     });
     await ctx.reply(
