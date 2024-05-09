@@ -125,10 +125,7 @@ const superWizard = new WizardScene(
   'super-wizard',
   async (ctx) => {
     await login()(ctx);
-    if (
-      ctx.session.wallet ||
-      JSON.parse(ctx.session.user?.metadata || '{}').wallet
-    ) {
+    if (JSON.parse(ctx.session.user?.metadata || '{}').wallet) {
       await ctx.reply('Кошелек уже подключен');
       return ctx.scene.leave();
     }
