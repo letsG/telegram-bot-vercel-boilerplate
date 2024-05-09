@@ -73,9 +73,13 @@ stepHandler.action('next', async (ctx) => {
 
   newConnectRequestListenersMap.get(chatId)?.();
 
-  const connector = getConnector(chatId, () => {
-    unsubscribe();
+  const unsubscribe = () => {
     newConnectRequestListenersMap.delete(chatId);
+  };
+
+  const connector = getConnector(chatId, () => {
+    newConnectRequestListenersMap.delete(chatId);
+    unsubscribe();
   });
 
   await connector.restoreConnection();
@@ -93,16 +97,6 @@ stepHandler.action('next', async (ctx) => {
     return;
   }
 
-  const unsubscribe = connector.onStatusChange(async (wallet) => {
-    if (wallet) {
-      const walletName =
-        (await getWalletInfo(wallet.device.appName))?.name ||
-        wallet.device.appName;
-      await ctx.sendMessage(`${walletName} wallet connected successfully`);
-      unsubscribe();
-      newConnectRequestListenersMap.delete(chatId);
-    }
-  });
   const walletHandler = async (wallet: Wallet) => {
     const walletName =
       (await getWalletInfo(wallet.device.appName))?.tondns ||
