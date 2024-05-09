@@ -75,7 +75,7 @@ stepHandler.action('next', async (ctx) => {
     manifestUrl: process.env.MANIFEST_URL,
   });
 
-  const walletHandler = async (wallet: Wallet, ctx: SessionContext) => {
+  const walletHandler = async (wallet: Wallet) => {
     const walletName =
       (await getWalletInfo(wallet.device.appName))?.tondns ||
       wallet.account.publicKey;
@@ -95,7 +95,7 @@ stepHandler.action('next', async (ctx) => {
   connector.onStatusChange(async (wallet) => {
     if (wallet) {
       debug('Wallet connected', wallet);
-      return walletHandler(wallet, ctx);
+      return walletHandler(wallet);
     }
   });
 
@@ -109,7 +109,7 @@ stepHandler.action('next', async (ctx) => {
   });
 
   if (ctx.session.wallet) {
-    return walletHandler(ctx.session.wallet, ctx);
+    return walletHandler(ctx.session.wallet);
   }
 
   await ctx.reply(
