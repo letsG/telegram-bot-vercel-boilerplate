@@ -78,7 +78,7 @@ stepHandler.action('next', async (ctx) => {
     manifestUrl: process.env.MANIFEST_URL,
   });
 
-  const walletHandler = async (wallet: Wallet) => {
+  const walletHandler = async (wallet: Wallet, ctx: SessionContext) => {
     const walletName =
       (await getWalletInfo(wallet.device.appName))?.tondns ||
       wallet.account.publicKey;
@@ -97,12 +97,12 @@ stepHandler.action('next', async (ctx) => {
   };
 
   if (ctx.session.wallet) {
-    return walletHandler(ctx.session.wallet);
+    return walletHandler(ctx.session.wallet, ctx);
   }
 
   connector.onStatusChange(async (wallet) => {
     if (wallet) {
-      return walletHandler(wallet);
+      return walletHandler(wallet, ctx);
     }
   });
 
