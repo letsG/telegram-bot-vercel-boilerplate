@@ -5,10 +5,10 @@ import { SessionContext } from '../index';
 
 const debug = createDebug('bot:about_command');
 
-const login = () => async (ctx: SessionContext) => {
+const login = async (ctx: SessionContext) => {
   const message = `*${name} ${version}**\n\n${description}*\n\nText author ${author} for more info `;
 
-  debug(`Triggered "about" command with message \n${message}`);
+  debug(`Triggered "login" command with message \n${message}`);
 
   let user = ctx.session.user;
   debug(`session User ${user}`);

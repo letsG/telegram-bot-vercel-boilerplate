@@ -6,7 +6,6 @@ import {
   Composer,
   Markup,
 } from 'telegraf';
-import { login } from './commands';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { development, production } from './core';
 import type { Update } from 'telegraf/types';
@@ -14,15 +13,14 @@ import { User } from './db/models';
 import {
   SceneContextScene,
   WizardContextWizard,
-  WizardScene,
   WizardSessionData,
 } from 'telegraf/scenes';
-import { name, description, author } from '../package.json';
 import { getWalletInfo, getWallets } from './ton-connect/wallets';
 import { CHAIN, toUserFriendlyAddress, Wallet } from '@tonconnect/sdk';
 import createDebug from 'debug';
 import { updateUserMetaData } from './db';
 import { getConnector } from './ton-connect/connector';
+import { handleConnectCommand } from './ton-connect/commands-handlers';
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const ENVIRONMENT = process.env.NODE_ENV || '';
@@ -40,6 +38,7 @@ export interface SessionContext<U extends Update = Update> extends Context<U> {
 }
 
 const bot = new Telegraf<SessionContext>(BOT_TOKEN);
+
 // dropUserTable().then(() => {
 //   debug('User table created');
 // });
@@ -148,34 +147,7 @@ stepHandler.action('next', async (ctx) => {
   return ctx.wizard.next();
 });
 
-const superWizard = new WizardScene(
-  'super-wizard',
-  async (ctx) => {
-    await login()(ctx);
-    if (
-      ctx.session.user?.id &&
-      JSON.parse(ctx.session.user?.metadata || '{}')?.wallet
-    ) {
-      await ctx.reply('Спасибо за участие в розыгрыше!');
-      return ctx.scene.leave();
-    }
-
-    await ctx.reply(
-      `Здарова [${ctx.session.user?.first_name}]!\n\n Добро пожаловать в розыгрыш NFT от @${name}! 🎉\n\n${description}*\n\nНапиши ${author} если что-то не понятно`,
-      Markup.inlineKeyboard([
-        Markup.button.callback('➡️ Хочу участвовать в розыгрыше! ', 'next'),
-      ]),
-    );
-    return ctx.wizard.next();
-  },
-  stepHandler,
-);
-
-const stage = new Scenes.Stage<SessionContext>([superWizard], {
-  default: 'super-wizard',
-});
-
-bot.use(stage.middleware());
+bot.command('start', handleConnectCommand);
 
 //prod mode (Vercel)
 export const startVercel = async (req: VercelRequest, res: VercelResponse) => {
