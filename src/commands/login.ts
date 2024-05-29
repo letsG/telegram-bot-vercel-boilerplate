@@ -34,6 +34,7 @@ const login = async (ctx: SessionContext) => {
       user = dbUser;
     }
     ctx.session.user = user;
+    await ctx.reply(`Hello, ${user?.first_name}`);
   }
 };
 
