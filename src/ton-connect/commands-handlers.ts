@@ -45,10 +45,9 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
     newConnectRequestListenersMap.delete(chatId);
     deleteMessage();
   });
+  ctx.sendMessage('connector');
 
   await connector.restoreConnection();
-
-  ctx.sendMessage('connector');
 
   if (connector.connected) {
     const connectedName =
