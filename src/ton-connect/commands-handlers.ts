@@ -24,6 +24,7 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
   await login(ctx);
 
   debug('Connect command received', chatId);
+  ctx.sendMessage(`Connect command received ${chatId}`);
 
   let messageWasDeleted = false;
 
