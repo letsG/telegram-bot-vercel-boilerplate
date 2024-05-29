@@ -9,8 +9,7 @@ import {
   WizardSessionData,
 } from 'telegraf/scenes';
 import { Wallet } from '@tonconnect/sdk';
-// import { handleConnectCommand } from './ton-connect/commands-handlers';
-import { login } from './commands';
+import { handleConnectCommand } from './ton-connect/commands-handlers';
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const ENVIRONMENT = process.env.NODE_ENV || '';
@@ -45,7 +44,7 @@ bot.use(
   }),
 );
 
-bot.command('start', login);
+bot.command('start', handleConnectCommand);
 
 //prod mode (Vercel)
 export const startVercel = async (req: VercelRequest, res: VercelResponse) => {

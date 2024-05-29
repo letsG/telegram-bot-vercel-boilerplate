@@ -9,7 +9,6 @@ import { getConnector } from './connector';
 import { addTGReturnStrategy, pTimeout, pTimeoutException } from './utils';
 import { SessionContext } from '../index';
 import createDebug from 'debug';
-import { login } from '../commands';
 import { walletMenuCallbacks } from './connect-wallet-menu';
 import { updateUserMetaData } from '../db';
 
@@ -18,15 +17,13 @@ const debug = createDebug('ton-connect:command_handlers');
 let newConnectRequestListenersMap = new Map<number, () => void>();
 
 export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
-  const chatId = ctx?.message?.chat.id;
-  if (!chatId) return;
-
-  await login(ctx);
-
-  debug('Connect command received', chatId);
-  ctx.sendMessage(`Connect command received ${chatId}`);
-
+  const chatId = ctx?.chat?.id;
   let messageWasDeleted = false;
+
+  if (!chatId) {
+    ctx.reply(`error. no chat id. try again`);
+    return;
+  }
 
   const deleteMessage = async (): Promise<void> => {
     try {
@@ -42,7 +39,7 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
   newConnectRequestListenersMap.get(chatId)?.();
 
   const connector = getConnector(chatId, () => {
-    // unsubscribe();
+    unsubscribe();
     newConnectRequestListenersMap.delete(chatId);
     deleteMessage();
   });
@@ -94,8 +91,6 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
 
   newConnectRequestListenersMap.set(chatId, async () => {
     unsubscribe();
-
-    await deleteMessage();
 
     newConnectRequestListenersMap.delete(chatId);
   });
