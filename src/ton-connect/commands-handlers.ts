@@ -11,6 +11,7 @@ import { SessionContext } from '../index';
 import createDebug from 'debug';
 import { walletMenuCallbacks } from './connect-wallet-menu';
 import { updateUserMetaData } from '../db';
+import { login } from '../commands';
 
 const debug = createDebug('ton-connect:command_handlers');
 
@@ -25,6 +26,7 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
     return;
   }
 
+  await login(ctx);
   const deleteMessage = async (): Promise<void> => {
     try {
       if (!messageWasDeleted) {
