@@ -14,9 +14,15 @@ async function onWalletClick(
   data: string,
 ): Promise<void> {
   const chatId = query.message!.chat.id;
+
+  query.reply(`chatId ${chatId}`);
+
   const connector = getConnector(chatId);
 
   const selectedWallet = await getWalletInfo(data);
+
+  query.reply(`selectedWallet ${selectedWallet}`);
+
   if (!selectedWallet) {
     return;
   }

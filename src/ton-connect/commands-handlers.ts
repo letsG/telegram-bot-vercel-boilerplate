@@ -48,6 +48,8 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
 
   await connector.restoreConnection();
 
+  ctx.sendMessage('connector');
+
   if (connector.connected) {
     const connectedName =
       (await getWalletInfo(connector.wallet!.device.appName))?.name ||
@@ -83,8 +85,10 @@ export async function handleConnectCommand(ctx: SessionContext): Promise<void> {
 
   const tonkeeper = wallets.find((wallet) => wallet.appName === 'tonkeeper');
 
+  ctx.reply(`tonkeeper ${JSON.stringify(tonkeeper)}`);
+
   if (tonkeeper) {
-    await walletMenuCallbacks['select_wallet'](ctx, tonkeeper?.appName);
+    await walletMenuCallbacks['select_wallet'](ctx, tonkeeper.appName);
   }
 
   newConnectRequestListenersMap.set(chatId, async () => {
